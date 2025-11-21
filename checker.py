@@ -29,11 +29,25 @@ def breached(password, breach_list):
     return password.lower() in [b.lower() for b in breach_list]
 
 def analyze(password):
+    def suggestions(password):
+    sug = []
+    if len(password) < 12:
+        sug.append("Use at least 12 characters.")
+    if password.islower() or password.isupper():
+        sug.append("Mix uppercase and lowercase letters.")
+    if not any(c.isdigit() for c in password):
+        sug.append("Add numbers.")
+    if password.isalnum():
+        sug.append("Add special characters (!, @, #, etc.)")
+    return sug
+
     breach_db = load_breach_list()
     result = {
         "password": password,
         "strength": strength(password),
-        "is_breached": breached(password, breach_db)
+"is_breached": breached(password, breach_db),
+"suggestions": suggestions(password)
+
     }
     REPORT.write_text(json.dumps(result, indent=2))
     print("Report saved:", REPORT)
